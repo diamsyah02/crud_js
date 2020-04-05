@@ -1,0 +1,93 @@
+<!-- Created By Diamsyah M Dida -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD JavaScript</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+
+    <!-- panggil file main js -->
+    <script src="main.js"></script>
+</head>
+
+<body onload="firstLoad()">
+    <div class="container pt-4">
+        <div class="jumbotron text-center">
+            <h1>Crud JavaScript</h1>
+        </div>
+
+        <!-- form tambah data tabungan -->
+        <div class="row pb-3">
+            <div class="col-12 pb-2">
+                <label>Nama Penabung</label>
+                <input type="text" class="form-control" id="nama_penabung" placeholder="Masukkan nama">
+            </div>
+            <div class="col-6">
+                <label>Nominal Menabung</label>
+                <input type="number" class="form-control" id="nominal_menabung" placeholder="Masukkan nominal menabung">
+            </div>
+            <div class="col-6">
+                <label>Tanggal Menabung</label>
+                <input type="date" class="form-control" id="tanggal_menabung">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <button class="btn btn-info btn-block" id="simpan_data" onclick="simpanData()">Simpan</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-danger btn-block" id="reset_data" onclick="resetData()">Reset Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- tabel menampilkan data tabungan -->
+    <div class="container" id="table_tabungan">
+        <h5 class="pt-3">Data Tabungan</h5>
+        <div class="table table-responsive">
+            <table class="table table-bordered">
+                <thead class="bg-secondary text-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Nama Penabung</th>
+                        <th>Nominal</th>
+                        <th>Tanggal</th>
+                        <th colspan="2" width="14%">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tabungan">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- form edit tabungan -->
+    <div class="container pt-3 pb-3" id="form_edit">
+        <h5>Edit Data Tabungan</h5>
+        <div class="row pb-3">
+            <div class="col-6 pb-2">
+                <label>Id Penabung</label>
+                <input type="number" class="form-control" id="id_penabung" readonly>
+            </div>
+            <div class="col-6 pb-2">
+                <label>Nama Penabung</label>
+                <input type="text" class="form-control" id="nama_penabung2" placeholder="Masukkan nama penabung">
+            </div>
+            <div class="col-6">
+                <label>Nominal Menabung</label>
+                <input type="number" class="form-control" id="nominal_menabung2" placeholder="Masukkan nominal menabung">
+            </div>
+            <div class="col-6">
+                <label>Tanggal Menabung</label>
+                <input type="date" class="form-control" id="tanggal_menabung2">
+            </div>
+        </div>
+        <button class="btn btn-success btn-block" id="update_data" onclick="updateData()">Update</button>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,321 @@
+<!-- Created By Diamsyah M Dida -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD JavaScript</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+</head>
+
+<body onload="firstLoad()">
+    <div class="container pt-4">
+        <div class="jumbotron text-center">
+            <h1>Crud JavaScript</h1>
+        </div>
+
+        <!-- form tambah data tabungan -->
+        <div class="row pb-3">
+            <div class="col-12 pb-2">
+                <label>Nama Penabung</label>
+                <input type="text" class="form-control" id="nama_penabung" placeholder="Masukkan nama penabung">
+            </div>
+            <div class="col-6">
+                <label>Nominal Menabung</label>
+                <input type="number" class="form-control" id="nominal_menabung" placeholder="Masukkan nominal menabung">
+            </div>
+            <div class="col-6">
+                <label>Tanggal Menabung</label>
+                <input type="date" class="form-control" id="tanggal_menabung">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <button class="btn btn-info btn-block" id="simpan_data">Simpan</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-danger btn-block" id="reset_data">Reset Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- tabel menampilkan data tabungan -->
+    <div class="container" id="table_tabungan">
+        <h5 class="pt-3">Data Tabungan</h5>
+        <div class="table table-responsive">
+            <table class="table table-bordered">
+                <thead class="bg-secondary text-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Nama Penabung</th>
+                        <th>Nominal</th>
+                        <th>Tanggal</th>
+                        <th colspan="2" width="14%">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tabungan">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- form edit tabungan -->
+    <div class="container pt-3 pb-3" id="form_edit">
+        <h5>Edit Data Tabungan</h5>
+        <div class="row pb-3">
+            <div class="col-6 pb-2">
+                <label>Id Penabung</label>
+                <input type="number" class="form-control" id="id_penabung" readonly>
+            </div>
+            <div class="col-6 pb-2">
+                <label>Nama Penabung</label>
+                <input type="text" class="form-control" id="nama_penabung2" placeholder="Masukkan nama penabung">
+            </div>
+            <div class="col-6">
+                <label>Nominal Menabung</label>
+                <input type="number" class="form-control" id="nominal_menabung2" placeholder="Masukkan nominal menabung">
+            </div>
+            <div class="col-6">
+                <label>Tanggal Menabung</label>
+                <input type="date" class="form-control" id="tanggal_menabung2">
+            </div>
+        </div>
+        <button class="btn btn-success btn-block" id="update_data">Update</button>
+    </div>
+
+    <script>
+        // function/fungsi ketika browser di load
+        function firstLoad(){
+            // jalankan function/fungsi menampilkan data tabungan
+            tampilkanDataTabungan();
+        }
+
+        // function/fungsi untuk menampilakan data tabungan
+        function tampilkanDataTabungan(){
+            // hide/sembunyikan form edit tabungan
+            document.getElementById('form_edit').style.display = 'none';
+
+            // kosongkan form tambah tabungan
+            document.getElementById('nama_penabung').value = '';
+            document.getElementById('nominal_menabung').value = 0;
+            document.getElementById('tanggal_menabung').value = '';
+
+            // ambil data tabungan di local storage lalu parse & masukkan ke variable dataTabungan
+            var dataTabungan = JSON.parse(localStorage.getItem('tabungan'));
+
+            // buat variable isTabungan kasih nilai string kosong
+            var isTabungan = '';
+
+            // buat variable kutip kasih nilai kutip satu(');
+            var kutip = "'";
+
+            // jika data tabungan di local storage tidak ada
+            if (dataTabungan === null || dataTabungan.length === 0) {
+
+                // hide/sembunyikan tabel untuk menampilkan data tabungan
+                document.getElementById('table_tabungan').style.display = 'none';
+                document.getElementById('tabungan').innerHTML = isTabungan;
+
+            // jika data tabungan di local storage ada
+            } else {
+
+                // show/tampilkan tabel untuk menampilkan data tabungan
+                document.getElementById('table_tabungan').style.display = 'block';
+
+                // looping data tabungan yang ada di local storage
+                dataTabungan.forEach(function (data, index) {
+
+                    // variable isTabungan di isi nilai
+                    isTabungan += '<tr>' +
+                        '<td>' + data.id + '</td>' +
+                        '<td>' + data.namaPenabung + '</td>' +
+                        '<td>Rp ' + Number(data.nominalMenabung).toLocaleString('ID') + '</td>' +
+                        '<td>' + data.tanggalMenabung + '</td>' +
+                        '<td>' +
+                        '<a class="btn btn-danger text-light" onclick="hapusData(' + kutip + Number(index) + kutip + ')">Hapus</a>&nbsp;' +
+                        '<a class="btn btn-warning text-light" onclick="editData(' + kutip + Number(index) + kutip + ')">Edit</a>' +
+                        '</td>' +
+                        '</tr>';
+                });
+
+                // suntikan atau masukkan variable isTabungan ke dalam tag html dengan properti id="tabungan"
+                document.getElementById('tabungan').innerHTML = isTabungan;
+            }
+        }
+
+        // ketika user mengklik tombol dengan properti id="simpan_data" jalankan function/fungsi simpanData
+        document.getElementById("simpan_data").addEventListener("click", simpanData);
+
+        // function/fungsi untuk menyimpan data tabungan ke local storage
+        function simpanData(){
+            // semua inputan pada form menabung masukkan pada variable nama, nominal, tanggal
+            // data inputan di tangkap menggunakan properti id pada tag <input>
+            var nama = document.getElementById('nama_penabung').value;
+            var nominal = document.getElementById('nominal_menabung').value;
+            var tanggal = document.getElementById('tanggal_menabung').value;
+
+            // jika form tambah tabungan tidak semua di isi
+            if(!nama || !nominal || nominal == 0 || !tanggal){
+                alert('Form tambah tabungan harus di isi semua');
+
+            // jika form tambah tabungan di isi semua
+            }else{
+
+                // ambil data tabungan di local storage lalu parse & masukkan ke variable dataTabungan
+                var dataTabungan = JSON.parse(localStorage.getItem('tabungan'));
+
+                // buat variable id
+                var id;
+
+                // jika data tabungan di local storage tidak ada
+                if(dataTabungan === null || dataTabungan.length === 0){
+
+                    // variable id di isi dengan angka 1
+                    id = 1;
+
+                    // buat variable array dengan isi data id, namaPenabung, nominalMenabung, tanggalMenabung
+                    // ke 4 data itu akan menjadi field-field di local storage
+                    // yang pernah main database (DBMS) kaya MySQL dll pasti paham field-field yang saya maksud
+                    var data = {
+                        'id': id,
+                        'namaPenabung': nama,
+                        'nominalMenabung': nominal,
+                        'tanggalMenabung': tanggal
+                    };
+                    
+                    // push variable data ke dalam variable dataTabungan
+                    dataTabungan = [data];
+
+                    // simpan data tabungan ke dalam local storage
+                    localStorage.setItem('tabungan', JSON.stringify(dataTabungan));
+
+                    // jalankan function/fungsi menampilkan data tabungan
+                    tampilkanDataTabungan();
+
+                // jika data tabungan di local storage ada
+                }else{
+
+                    // variable id di isi dengan jumlah data tabungan + 1 (di tambah satu) 
+                    id = dataTabungan.length+1;
+
+                    // buat variable array dengan isi data id, namaPenabung, nominalMenabung, tanggalMenabung
+                    // ke 4 data itu akan menjadi field-field di local storage
+                    // yang pernah main database (DBMS) kaya MySQL dll pasti paham field-field yang saya maksud
+                    var data = {
+                        'id': id,
+                        'namaPenabung': nama,
+                        'nominalMenabung': nominal,
+                        'tanggalMenabung': tanggal
+                    };
+
+                    // looping data tabungan
+                    for (let i = 0; i < dataTabungan.length; i++) {
+                        // tambahkan / gabungkan data tabungan baru dengan data tabungan yang sudah ada 
+                        dataTabungan.push(data);
+
+                        // hentikan looping
+                        break;
+                    }
+
+                    // simpan data tabungan ke dalam local storage
+                    localStorage.setItem('tabungan', JSON.stringify(dataTabungan));
+
+                    // jalankan function/fungsi menampilkan data tabungan
+                    tampilkanDataTabungan();
+                }
+            }
+        }
+
+        // ketika user mengklik tombol dengan properti id="reset_data" jalankan function/fungsi resetData
+        document.getElementById("reset_data").addEventListener("click", resetData);
+        
+        // function/fungsi untuk me-reset data tabungan di local storage
+        function resetData(){
+            // reset data tabungan di local storage
+            localStorage.removeItem('tabungan');
+
+            // jalankan function/fungsi menampilkan data tabungan
+            tampilkanDataTabungan();
+        }
+
+        // function/fungsi hapus salah satu data tabungan
+        function hapusData(item){
+            // ambil data tabungan di local storage lalu parse & masukkan ke variable dataTabungan
+            var dataTabungan = JSON.parse(localStorage.getItem('tabungan'));
+
+            // jika parameter i lebih dari -1
+            if (item > -1) {
+
+                // hapus salah satu data tabungan yang index nya sesuai dengan nilai parameter item
+                dataTabungan.splice(item, 1);
+
+                // simpan data tabungan ke dalam local storage
+                localStorage.setItem('tabungan', JSON.stringify(dataTabungan));
+
+                // jalankan function/fungsi menampilkan data tabungan
+                tampilkanDataTabungan();
+            }
+        }
+
+        // function/fungsi edit salah satu data tabungan
+        function editData(item){
+            // show/tampilkan form edit tabungan
+            document.getElementById('form_edit').style.display = 'block';
+
+            // ambil data tabungan di local storage lalu parse & masukkan ke variable dataTabungan
+            var dataTabungan = JSON.parse(localStorage.getItem('tabungan'));
+
+            // buat variable data dengan nilai data tabungan yang index nya sama dengan parameter item
+            var data = dataTabungan[item];
+
+            // suntikan atau masukkan data tabungan yang index nya sama dengan parameter item ke dalam form edit tabungan
+            // sesuaikan dengan inputan pada form edit tabungan
+            document.getElementById('id_penabung').value = data.id;
+            document.getElementById('nama_penabung2').value = data.namaPenabung;
+            document.getElementById('nominal_menabung2').value = data.nominalMenabung;
+            document.getElementById('tanggal_menabung2').value = data.tanggalMenabung;     
+        }
+
+        // ketika user mengklik tombol dengan properti id="update_data" jalankan function/fungsi updateData
+        document.getElementById('update_data').addEventListener('click', updateData);
+
+        // function/fungsi untuk meng-update salah satu data tabungan yang di edit
+        function updateData(){
+            // semua inputan pada form edit tabungan masukkan pada variable nama, nominal, tanggal
+            // data inputan di tangkap menggunakan properti id pada tag <input>
+            var id = document.getElementById('id_penabung').value;
+            var nama = document.getElementById('nama_penabung2').value;
+            var nominal = document.getElementById('nominal_menabung2').value;
+            var tanggal = document.getElementById('tanggal_menabung2').value;
+
+            // jika form edit tabungan tidak semua di isi
+            if(!nama || !nominal || nominal == 0 || !tanggal){
+                alert('Form tambah tabungan harus di isi semua');
+
+            // jika form edit tabungan di isi semua
+            }else{
+
+                // ambil data tabungan di local storage lalu parse & masukkan ke variable dataTabungan
+                var dataTabungan = JSON.parse(localStorage.getItem('tabungan'));
+
+                // cari data tabungan yang index nya sama dengan id data tabungan yang di edit
+                // lalu sesuaikan field apa saja yang mau di update
+                // di sini meng-update field-field namaPenabung, nominalMenabung, tanggalMenabung
+                dataTabungan.find(data => data.id == id).namaPenabung = nama;
+                dataTabungan.find(data => data.id == id).nominalMenabung = nominal;
+                dataTabungan.find(data => data.id == id).tanggalMenabung = tanggal;
+
+                // simpan data tabungan ke dalam local storage
+                localStorage.setItem('tabungan', JSON.stringify(dataTabungan));
+
+                // jalankan function/fungsi menampilkan data tabungan
+                tampilkanDataTabungan();
+            }
+        }
+    </script>
+</body>
+
+</html>
